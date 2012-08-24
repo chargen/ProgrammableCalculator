@@ -39,16 +39,17 @@ public class RunCalcTest {
 			parser.debugOutput();
 			parser.clear();
 
-			parser.parse("3 3 ? *");
+			parser.parse("36 3 2 ? * / ");
 			boolean result = parser.createStack();
 			if(result) {
 				parser.parse("3 +", true);
 			}
-			parser.debugOutput();
 			parser.createStack();
+			parser.debugOutput();
 			CalcExecutor executor = new CalcExecutor();
 			CalcStack stack = parser.getStack();
 			executor.execute(stack);
+			stack.printResult();
 			parser.clear();
 
 		} catch(Exception ex) {
