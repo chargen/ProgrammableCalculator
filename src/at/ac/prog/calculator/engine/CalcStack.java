@@ -8,7 +8,7 @@ public class CalcStack extends Stack<Object> {
 
 	public void printResult() {
 		if(this.size() > 0) {
-			System.out.println("Calculation Result: " + this.peek());
+			System.out.println("Calculation Result: " + this.pop());
 		}
 	}
 
