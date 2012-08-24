@@ -7,7 +7,7 @@ import at.ac.prog.calculator.engine.exception.CalcParsingException;
 
 public class CalcParser {
 
-	private final ArrayList<String> parsedElems;
+	private ArrayList<String> parsedElems;
 	private final CalcStack stack = new CalcStack();
 
 	public CalcParser() {
@@ -140,9 +140,17 @@ public class CalcParser {
 	 */
 	public boolean createStack() {
 		String first;
-		while((first = parsedElems.remove(0)) != null) {
+		while(parsedElems.size() > 0 && (first = parsedElems.remove(0)) != null) {
 			if(!first.equals("?")) {
-				stack.push(first);
+				Integer integer = null;
+				try {
+					integer = Integer.parseInt(first);
+				} catch(NumberFormatException e) { }
+				if(integer != null) {
+					stack.push(integer);
+				} else {
+					stack.push(first);
+				}
 			} else {
 				return true;
 			}
@@ -152,10 +160,24 @@ public class CalcParser {
 
 	public void debugOutput() {
 		System.out.println("---------------------------------- DEBUG -------------------------------------");
-		for(int i = 0; i < this.parsedElems.size(); i++) {
-			System.out.println("Element " + i + ": " + this.parsedElems.get(i));
+		int i;
+		for(i = 0; i < this.stack.size(); i++) {
+			System.out.println("Element Stack" + i + ": " + this.stack.get(i));
+		}
+		for(int j = 0; j < this.parsedElems.size(); j++) {
+			System.out.println("Element List" + (j+i) + ": " + this.parsedElems.get(j));
 		}
 	}
 
+	public void parse(String string, boolean b) throws CalcParsingException {
+		ArrayList<String> tempList = parsedElems;
+		parsedElems = new ArrayList<String>();
+		parse(string);
+		parsedElems.addAll(tempList);
+	}
+
+	public CalcStack getStack() {
+		return stack;
+	}
 
 }
