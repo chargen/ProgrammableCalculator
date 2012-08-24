@@ -1,6 +1,8 @@
 package at.ac.prog.calculator;
 
+import at.ac.prog.calculator.engine.CalcExecutor;
 import at.ac.prog.calculator.engine.CalcParser;
+import at.ac.prog.calculator.engine.CalcStack;
 
 
 public class RunCalcTest {
@@ -35,14 +37,18 @@ public class RunCalcTest {
 
 			parser.parse("3 [3!3!1-2!1=[]5![4!5#2+#@]@3#*]3!4#3!@3#");
 			parser.debugOutput();
+			parser.clear();
 
-
-			parser.parse("3 3 3 ? *");
+			parser.parse("3 3 ? *");
 			boolean result = parser.createStack();
 			if(result) {
-				parser.parse("3 +");
+				parser.parse("3 +", true);
 			}
 			parser.debugOutput();
+			parser.createStack();
+			CalcExecutor executor = new CalcExecutor();
+			CalcStack stack = parser.getStack();
+			executor.execute(stack);
 			parser.clear();
 
 		} catch(Exception ex) {
