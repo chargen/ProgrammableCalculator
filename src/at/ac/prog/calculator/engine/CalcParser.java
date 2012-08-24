@@ -6,19 +6,24 @@ import java.util.regex.Pattern;
 import at.ac.prog.calculator.engine.exception.CalcParsingException;
 
 public class CalcParser {
-	
-	private ArrayList<String> parsedElems;
-	
+
+	private final ArrayList<String> parsedElems;
+	private final CalcStack stack = new CalcStack();
+
 	public CalcParser() {
 		parsedElems = new ArrayList<String>();
 	}
-	
-	public void parse(String command) throws CalcParsingException {
-		// DEBUG ONLY
+
+	/**
+	 * For debug purposes.
+	 */
+	public void clear() {
 		this.parsedElems.clear();
-		
+	}
+
+	public void parse(String command) throws CalcParsingException {
 		command = command.replaceAll("\\s+", " ");
-		
+
 		String newElem = null;
 		int numOpenBrackets = 0;
 		boolean readSpecialCharacter = false;
@@ -29,29 +34,27 @@ public class CalcParser {
 				readSpecialCharacter = false;
 			}
 			switch(command.charAt(i)) {
-				case '[':
+				case '[': {
 					if(numOpenBrackets != 0) {
 						newElem += command.charAt(i);
 						numOpenBrackets++;
-					}
-					else {
+					} else {
 						newElem = String.valueOf(command.charAt(i));
 						numOpenBrackets = 1;
 					}
 					break;
-				case ']':
+				} case ']': {
 					if(numOpenBrackets == 1) {
 						newElem += command.charAt(i);
 						numOpenBrackets = 0;
 						parsedElems.add(newElem);
 						newElem = null;
-					}
-					else {
+					} else {
 						newElem += command.charAt(i);
 						numOpenBrackets--;
 					}
 					break;
-				default:
+				} default: {
 					if(numOpenBrackets != 0) {
 						newElem += command.charAt(i);
 					}
@@ -68,59 +71,62 @@ public class CalcParser {
 								if ((pattern.matcher(String.valueOf(command.charAt(i)))).matches() == true) {
 									if((newElem != null) && (isNumeric(newElem) == true)) {
 										newElem += command.charAt(i);
-									}
-									else {
+									} else {
 										newElem = String.valueOf(command.charAt(i));
 									}
 									break;
-								}
-								else {
+								} else {
 									if(isNumeric(newElem) == true) {
 										parsedElems.add(newElem);
 										newElem = null;
 									}
 								}
-								
+
 								pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'");
 								if ((pattern.matcher(String.valueOf(command.charAt(i)))).matches() == true) {
 									parsedElems.add(String.valueOf(command.charAt(i)));
-								}
-								else if(command.charAt(i) == '?') {
+								} else if(command.charAt(i) == '?') {
+									parsedElems.add(String.valueOf(command.charAt(i)));
+								} else if(command.charAt(i) == '\\') {
+									readSpecialCharacter = true;
+								} else {
 									parsedElems.add(String.valueOf(command.charAt(i)));
 								}
-								else if(command.charAt(i) == '\\') {
-									readSpecialCharacter = true;
-								}
-								else {
-									parsedElems.add(String.valueOf((int)command.charAt(i)));
-								}
-								
-								
 								break;
 						}
 					}
+				}
 			}
-			
 		}
-		
 		if(numOpenBrackets > 0) {
 			throw new CalcParsingException("closingBracket not found");
 		}
 	}
-	
-	public static boolean isNumeric(String str)  {  
-		try  
-		{  
-			@SuppressWarnings("unused")
-			Integer i = Integer.parseInt(str);  
-		}  
-		catch(NumberFormatException nfe)  
-		{  
-			return false;  
-		}  
-		return true;  
+
+	public static boolean isNumeric(String str)  {
+		try {
+			Integer.parseInt(str);
+		} catch(NumberFormatException nfe) {
+			return false;
+		}
+		return true;
 	}
-	
+
+	/**
+	 * @return True if a question mark was reached, false otherwise.
+	 */
+	public boolean createStack() {
+		String first;
+		while((first = parsedElems.remove(0)) != null) {
+			if(!first.equals("?")) {
+				stack.push(first);
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void debugOutput() {
 		System.out.println("---------------------------------- DEBUG -------------------------------------");
 		for(int i = 0; i < this.parsedElems.size(); i++) {
