@@ -30,7 +30,30 @@ public class CalcParser {
 		for (int i = 0; i < command.length(); i++) {
 			// DEBUG: System.out.println("TESTING: " + command.charAt(i));
 			if(readSpecialCharacter == true) {
-				parsedElems.add(String.valueOf(command.charAt(i)));
+				switch(command.charAt(i)) {
+					case 'n': {//line feed
+						parsedElems.add("\n");
+						break;
+					}
+					case 't': { //tabulator
+						parsedElems.add("\t");
+						break;
+					}
+					case 'r': { //carriage return
+						parsedElems.add("\r");
+						break;
+					}
+					case ' ': {//space
+						parsedElems.add(" ");
+						break;
+					}
+					case '\\': { //backslash
+						parsedElems.add("\\");
+						break;
+					} default: {
+						throw new CalcParsingException("Invalid escape character: " + command.charAt(i));
+					}
+				}
 				readSpecialCharacter = false;
 			}
 			switch(command.charAt(i)) {
