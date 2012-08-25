@@ -7,14 +7,20 @@ public class CalcExecutor {
 	private CalcStack operators = null;
 	private String printBuffer;
 
-	public void execute(CalcStack stack) {
+	/**
+	 * Reinitialize all variables and set the stack.
+	 */
+	public void prepare(CalcStack stack) {
 		this.stack = stack;
 		this.operators = new CalcStack();
 		this.printBuffer = "";
+	}
+
+	public void execute(CalcStack stack) {
 		Object token;
 		while(stack.size() > 0 && (token = stack.peek()) != null) {
 			if(token instanceof String) {
-				Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'");
+				Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\?");
 				String expression = (String) token;
 				if ((pattern.matcher(String.valueOf(expression.charAt(0)))).matches() == true) {
 					operators.push(stack.pop());
@@ -37,6 +43,13 @@ public class CalcExecutor {
 					case '<': less(); break;
 					case '\'': singleQuote(); break;
 					case '"': doubleQuote(); break;
+					case '?': {
+						//Print the print buffer, but not the result
+						if(!printBuffer.equals("")) {
+							System.out.println(printBuffer);
+						}
+						return;
+					}
 					default: {
 						throw new IllegalArgumentException("Encountered an invalid operator: " + token);
 					}

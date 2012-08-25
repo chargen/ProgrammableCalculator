@@ -22,6 +22,11 @@ public class CalcParser {
 	}
 
 	public void parse(String command) throws CalcParsingException {
+		ArrayList<String> tempList = null;
+		if(parsedElems.size() != 0) {
+			tempList = parsedElems;
+			parsedElems = new ArrayList<String>();
+		}
 		command = command.replaceAll("\\s+", " ");
 
 		String newElem = null;
@@ -118,7 +123,7 @@ public class CalcParser {
 								} else if(command.charAt(i) == '\\') {
 									readSpecialCharacter = true;
 								} else {
-									parsedElems.add(String.valueOf(command.charAt(i)));
+									parsedElems.add(String.valueOf(command.charAt(i))); //Printable ASCII Characters
 								}
 								break;
 						}
@@ -129,6 +134,10 @@ public class CalcParser {
 		if(numOpenBrackets > 0) {
 			throw new CalcParsingException("closingBracket not found");
 		}
+		if(tempList != null && tempList.size() > 0) {
+			parsedElems.addAll(tempList);
+		}
+		//createStack(); //TODO, call this here instead each time in the tests
 	}
 
 	public static boolean isNumeric(String str)  {
@@ -143,36 +152,32 @@ public class CalcParser {
 	/**
 	 * @return True if a question mark was reached, false otherwise.
 	 */
-	public boolean createStack() {
+	public void createStack() {
 		String first;
 		while(parsedElems.size() > 0 && (first = parsedElems.remove(0)) != null) {
-			if(!first.equals("?")) {
-				Integer integer = null;
-				try {
-					integer = Integer.parseInt(first);
-				} catch(NumberFormatException e) { }
-				if(integer != null) {
-					stack.push(integer);
-				} else {
-					if(first.length() == 2 && first.charAt(0) == '\\') {
-						char c = first.charAt(1);
-						stack.push(new Integer(c));
-					} else if(first.length() == 1 && !isOperator(first)) {
-						char c = first.charAt(0);
-						stack.push(new Integer(c));
-					} else {
-						stack.push(first); //we got an operator or an expression
-					}
-				}
+			Integer integer = null;
+			try {
+				integer = Integer.parseInt(first);
+			} catch(NumberFormatException e) { }
+			if(integer != null) {
+				stack.push(integer);
 			} else {
-				return true;
+				if(first.length() == 2 && first.charAt(0) == '\\') {
+					char c = first.charAt(1);
+					stack.push(new Integer(c));
+				} else if(first.length() == 1 && !isOperator(first)) {
+					char c = first.charAt(0);
+					stack.push(new Integer(c));
+				} else {
+					stack.push(first); //we got an operator or an expression
+				}
 			}
 		}
-		return false;
+		assert(parsedElems.size() == 0);
 	}
 
 	private boolean isOperator(String token) {
-		Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\|");
+		Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\||\\?");
 		return pattern.matcher(token).matches();
 	}
 
@@ -185,13 +190,6 @@ public class CalcParser {
 		for(int j = 0; j < this.parsedElems.size(); j++) {
 			System.out.println("Element List" + (j+i) + ": " + this.parsedElems.get(j));
 		}
-	}
-
-	public void parse(String string, boolean b) throws CalcParsingException {
-		ArrayList<String> tempList = parsedElems;
-		parsedElems = new ArrayList<String>();
-		parse(string);
-		parsedElems.addAll(tempList);
 	}
 
 	public CalcStack getStack() {
