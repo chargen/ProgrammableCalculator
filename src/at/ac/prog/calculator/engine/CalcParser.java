@@ -132,6 +132,9 @@ public class CalcParser {
 				}
 			}
 		}
+		if(newElem != null) {
+			parsedElems.add(newElem);
+		}
 		if(numOpenBrackets > 0) {
 			throw new CalcParsingException("closingBracket not found");
 		}
