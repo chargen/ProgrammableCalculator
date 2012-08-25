@@ -1,7 +1,5 @@
 package at.ac.prog.calculator.engine;
 
-import java.util.regex.Pattern;
-
 import at.ac.prog.calculator.engine.exception.CalcParsingException;
 
 public class CalcExecutor {
@@ -25,9 +23,8 @@ public class CalcExecutor {
 		boolean question_mark_operator = false;
 		while(this.stack.size() > 0 && (token = this.stack.peek()) != null) {
 			if(token instanceof String && ((String) token).length() == 1) {
-				Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\?");
 				String expression = (String) token;
-				if ((pattern.matcher(String.valueOf(expression.charAt(0)))).matches() == true) {
+				if (parser.isOperator(expression)) {
 					if(expression.equals("?")) {
 						question_mark_operator = true;
 					}

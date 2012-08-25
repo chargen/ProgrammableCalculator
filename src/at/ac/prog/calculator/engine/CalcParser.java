@@ -172,7 +172,7 @@ public class CalcParser {
 		assert(parsedElems.size() == 0);
 	}
 
-	private boolean isOperator(String token) {
+	public boolean isOperator(String token) {
 		Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\||\\?");
 		return pattern.matcher(token).matches();
 	}
