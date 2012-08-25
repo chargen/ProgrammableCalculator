@@ -183,9 +183,6 @@ public class CalcParser {
 		for(i = 0; i < this.stack.size(); i++) {
 			System.out.println("Element Stack" + i + ": " + this.stack.get(i));
 		}
-		for(int j = 0; j < this.parsedElems.size(); j++) {
-			System.out.println("Element List" + (j+i) + ": " + this.parsedElems.get(j));
-		}
 	}
 
 	public CalcStack getStack() {
