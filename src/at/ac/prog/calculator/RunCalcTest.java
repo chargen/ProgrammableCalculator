@@ -73,6 +73,13 @@ public class RunCalcTest {
 			stack.printResult();
 			parser.clear();
 
+			parser.parse("A\"B\"C\"D\"E\":\"");
+			parser.debugOutput();
+			parser.createStack();
+			stack = parser.getStack();
+			executor.execute(stack, true);
+			stack.printResult();
+
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
