@@ -56,6 +56,9 @@ public class CalcExecutor {
 				}
 			}
 		}
+		/* The end of the stack was reached but there is still a
+		 * question mark operator that needs to be handled.
+		 */
 		if(question_mark_operator) {
 			String operator = (String) operators.pop();
 			if(!operator.equals("?")) {
