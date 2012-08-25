@@ -89,6 +89,12 @@ public class RunCalcTest {
 			executor.prepare(stack, parser);
 			executor.execute();
 
+			parser.parse("3[2*]@");
+			parser.debugOutput();
+			stack = parser.getStack();
+			executor.prepare(stack, parser);
+			executor.execute();
+
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}

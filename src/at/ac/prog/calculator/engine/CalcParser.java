@@ -64,6 +64,10 @@ public class CalcParser {
 			}
 			switch(command.charAt(i)) {
 				case '[': {
+					if(newElem != null) {
+						parsedElems.add(newElem);
+						newElem = null;
+					}
 					if(numOpenBrackets != 0) {
 						newElem += command.charAt(i);
 						numOpenBrackets++;
