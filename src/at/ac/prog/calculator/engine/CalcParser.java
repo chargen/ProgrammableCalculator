@@ -149,7 +149,15 @@ public class CalcParser {
 				if(integer != null) {
 					stack.push(integer);
 				} else {
-					stack.push(first);
+					if(first.length() == 2 && first.charAt(0) == '\\') {
+						char c = first.charAt(1);
+						stack.push(new Integer(c));
+					} else if(first.length() == 1 && !isOperator(first)) {
+						char c = first.charAt(0);
+						stack.push(new Integer(c));
+					} else {
+						stack.push(first); //we got an operator or an expression
+					}
 				}
 			} else {
 				return true;
