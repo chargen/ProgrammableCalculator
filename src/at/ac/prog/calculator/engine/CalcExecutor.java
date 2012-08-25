@@ -44,10 +44,7 @@ public class CalcExecutor {
 					case '\'': singleQuote(); break;
 					case '"': doubleQuote(); break;
 					case '?': {
-						//Print the print buffer, but not the result
-						if(!printBuffer.equals("")) {
-							System.out.println(printBuffer);
-						}
+						flushPrintBuffer();
 						return;
 					}
 					default: {
@@ -56,10 +53,15 @@ public class CalcExecutor {
 				}
 			}
 		}
+		flushPrintBuffer();
+		stack.printResult();
+	}
+
+	private void flushPrintBuffer() {
 		if(!printBuffer.equals("")) {
 			System.out.println(printBuffer);
+			printBuffer = "";
 		}
-		stack.printResult();
 	}
 
 	private void add() throws IllegalArgumentException {
