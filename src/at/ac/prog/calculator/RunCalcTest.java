@@ -52,39 +52,24 @@ public class RunCalcTest {
 			parser.debugOutput();
 			CalcExecutor executor = new CalcExecutor();
 			CalcStack stack = parser.getStack();
-			executor.execute(stack); //use the recursive version
-			stack.printResult();
-			parser.clear();
-
-			/**
-			 * Parsing both expression would be equal to the following
-			 * calculation: 45 / (3 * (2+3)) = 3
-			 */
-			parser.parse("45 3 2 ? * / ");
-			result = parser.createStack();
-			if(result) {
-				parser.parse("3 +", true);
-			}
-			parser.createStack();
-			parser.debugOutput();
-			executor = new CalcExecutor();
-			stack = parser.getStack();
-			executor.execute(stack, true); //use the iterative version
-			stack.printResult();
+			executor.execute(stack); //use the iterative version
 			parser.clear();
 
 			parser.parse("A\"B\"C\"D\"E\":\"");
-			parser.debugOutput();
 			parser.createStack();
+			parser.debugOutput();
 			stack = parser.getStack();
-			executor.execute(stack, true);
-			stack.printResult();
+			executor.execute(stack);
+			parser.clear();
+
+			parser.parse("100'\\ \"\\+\"\\ \"100'\\ \"\\=\"\\ \"200'");
+			parser.createStack();
+			parser.debugOutput();
+			stack = parser.getStack();
+			executor.execute(stack);
 
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
-
-
 	}
-
 }

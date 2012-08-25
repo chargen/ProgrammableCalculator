@@ -9,29 +9,6 @@ public class CalcExecutor {
 
 	public void execute(CalcStack stack) {
 		this.stack = stack;
-		Object token;
-		if(stack.size() > 0 && (token = stack.pop()) != null) {
-			if(token instanceof String) {
-				switch(((String) token).charAt(0)) {
-					case '+': add(); break;
-					case '-': sub(); break;
-					case '*': mult(); break;
-					case '/': div(); break;
-					case '%': mod(); break;
-					case '>': greater(); break;
-					case '<': less(); break;
-					case '\'': singleQuote(); break;
-					case '"': doubleQuote(); break;
-					default: {
-						throw new IllegalArgumentException("Encountered an invalid operator: " + token);
-					}
-				}
-			}
-		}
-	}
-
-	public void execute(CalcStack stack, boolean iterative) {
-		this.stack = stack;
 		this.operators = new CalcStack();
 		this.printBuffer = "";
 		Object token;
@@ -73,10 +50,6 @@ public class CalcExecutor {
 	}
 
 	private void add() throws IllegalArgumentException {
-		if(!(stack.peek() instanceof Integer)) {
-			System.out.println("Recursing: +");
-			execute(stack);
-		}
 		int result = (Integer) stack.pop();
 		if(stack.peek() instanceof Integer) {
 			result += (Integer) stack.pop();
@@ -87,10 +60,6 @@ public class CalcExecutor {
 	}
 
 	private void sub() {
-		if(!(stack.peek() instanceof Integer)) {
-			System.out.println("Recursing: -");
-			execute(stack);
-		}
 		Integer result = (Integer) stack.pop();
 		if(stack.peek() instanceof Integer) {
 			result = (Integer) stack.pop() - result;
@@ -101,10 +70,6 @@ public class CalcExecutor {
 	}
 
 	private void mult() {
-		if(!(stack.peek() instanceof Integer)) {
-			System.out.println("Recursing: *");
-			execute(stack);
-		}
 		int result = (Integer) stack.pop();
 		if(stack.peek() instanceof Integer) {
 			result *= (Integer) stack.pop();
@@ -115,10 +80,6 @@ public class CalcExecutor {
 	}
 
 	private void div() {
-		if(!(stack.peek() instanceof Integer)) {
-			System.out.println("Recursing: /");
-			execute(stack);
-		}
 		double result = new Double((Integer) stack.pop());
 		if(stack.peek() instanceof Integer) {
 			result = new Double((Integer) stack.pop()) / result;
