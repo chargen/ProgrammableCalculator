@@ -19,6 +19,7 @@ public class CalcParser {
 	 */
 	public void clear() {
 		this.parsedElems.clear();
+		this.stack.clear();
 	}
 
 	public void parse(String command) throws CalcParsingException {
@@ -137,7 +138,7 @@ public class CalcParser {
 		if(tempList != null && tempList.size() > 0) {
 			parsedElems.addAll(tempList);
 		}
-		//createStack(); //TODO, call this here instead each time in the tests
+		createStack();
 	}
 
 	public static boolean isNumeric(String str)  {

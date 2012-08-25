@@ -46,19 +46,16 @@ public class RunCalcTest {
 			 * calculation: 45 / (3 * (2+3)) = 3
 			 */
 			parser.parse("45 3 2 ? * / ");
-			parser.createStack();
 			parser.debugOutput();
 			CalcStack stack = parser.getStack();
 			executor.prepare(stack);
 			executor.execute(stack);
 			parser.parse("3 +");
-			parser.createStack();
 			parser.debugOutput();
 			executor.execute(stack);
 			parser.clear();
 
 			parser.parse("A\"B\"C\"D\"E\"F\"G\":\"");
-			parser.createStack();
 			parser.debugOutput();
 			stack = parser.getStack();
 			executor.prepare(stack);
@@ -66,7 +63,6 @@ public class RunCalcTest {
 			parser.clear();
 
 			parser.parse("100'\\ \"\\+\"\\ \"100'\\ \"\\=\"\\ \"200'");
-			parser.createStack();
 			parser.debugOutput();
 			stack = parser.getStack();
 			executor.prepare(stack);
