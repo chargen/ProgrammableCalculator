@@ -1,8 +1,11 @@
 package at.ac.prog.calculator.engine;
 
+import java.util.regex.Pattern;
+
 public class CalcExecutor {
 	private CalcStack stack = null;
 	private CalcStack operators = null;
+	private String printBuffer = "";
 
 	public void execute(CalcStack stack) {
 		this.stack = stack;
@@ -17,6 +20,8 @@ public class CalcExecutor {
 					case '%': mod(); break;
 					case '>': greater(); break;
 					case '<': less(); break;
+					case '\'': singleQuote(); break;
+					case '"': doubleQuote(); break;
 					default: {
 						throw new IllegalArgumentException("Encountered an invalid operator: " + token);
 					}
@@ -31,20 +36,15 @@ public class CalcExecutor {
 		Object token;
 		while(stack.size() > 0 && (token = stack.peek()) != null) {
 			if(token instanceof String) {
-				switch(((String) token).charAt(0)) {
-					case '+':
-					case '-':
-					case '*':
-					case '/':
-					case '%':
-					case '>':
-					case '<': {
-						operators.push(stack.pop());
-						break;
-					}
-					default: {
-						throw new IllegalArgumentException("Encountered an invalid operator: " + token);
-					}
+				Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'");
+				String expression = (String) token;
+				if ((pattern.matcher(String.valueOf(expression.charAt(0)))).matches() == true) {
+					operators.push(stack.pop());
+				} else if(expression.charAt(0) == '[' && expression.charAt(expression.length()) == ']') {
+					expression.substring(1, expression.length()-1);
+						//handle expression
+				} else {
+					throw new IllegalArgumentException("Encountered an invalid operator or expression: " + expression);
 				}
 			} else {
 				if(operators.size() == 0) return;
@@ -54,11 +54,19 @@ public class CalcExecutor {
 					case '-': sub(); break;
 					case '*': mult(); break;
 					case '/': div(); break;
+					case '%': mod(); break;
+					case '>': greater(); break;
+					case '<': less(); break;
+					case '\'': singleQuote(); break;
+					case '"': doubleQuote(); break;
 					default: {
 						throw new IllegalArgumentException("Encountered an invalid operator: " + token);
 					}
 				}
 			}
+		}
+		if(!printBuffer.equals("")) {
+			System.out.println(printBuffer);
 		}
 	}
 
@@ -128,6 +136,28 @@ public class CalcExecutor {
 
 	private void less() {
 		throw new RuntimeException("Not implemented!");
+	}
+
+	private void singleQuote() {
+		throw new RuntimeException("Not implemented!");
+	}
+
+	private void doubleQuote() {
+		Object token = stack.pop();
+		if(token instanceof Integer) {
+			Integer data = (Integer) token;
+			if(data > 0x1f && data < 0x7f) {
+				/* new characters to print must actually be prepended to the buffer
+				 * because we are starting from the top of the stack which contains
+				 * the end of the string to be printed.
+				 */
+				printBuffer = ((char) data.intValue()) + printBuffer;
+			} else {
+				throw new IllegalArgumentException("You tried to print a non printable value.");
+			}
+		} else {
+			System.out.println((String) token);
+		}
 	}
 
 }
