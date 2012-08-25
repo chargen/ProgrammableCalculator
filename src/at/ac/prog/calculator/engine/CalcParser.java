@@ -148,10 +148,7 @@ public class CalcParser {
 		return true;
 	}
 
-	/**
-	 * @return True if a question mark was reached, false otherwise.
-	 */
-	public void createStack() {
+	private void createStack() {
 		String first;
 		while(parsedElems.size() > 0 && (first = parsedElems.remove(0)) != null) {
 			Integer integer = null;
