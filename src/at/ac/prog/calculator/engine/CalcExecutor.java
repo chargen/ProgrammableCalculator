@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 public class CalcExecutor {
 	private CalcStack stack = null;
 	private CalcStack operators = null;
-	private String printBuffer = "";
+	private String printBuffer;
 
 	public void execute(CalcStack stack) {
 		this.stack = stack;
@@ -33,6 +33,7 @@ public class CalcExecutor {
 	public void execute(CalcStack stack, boolean iterative) {
 		this.stack = stack;
 		this.operators = new CalcStack();
+		this.printBuffer = "";
 		Object token;
 		while(stack.size() > 0 && (token = stack.peek()) != null) {
 			if(token instanceof String) {
@@ -47,7 +48,7 @@ public class CalcExecutor {
 					throw new IllegalArgumentException("Encountered an invalid operator or expression: " + expression);
 				}
 			} else {
-				if(operators.size() == 0) return;
+				if(operators.size() == 0) break;
 				token = operators.pop();
 				switch(((String) token).charAt(0)) {
 					case '+': add(); break;
@@ -68,6 +69,7 @@ public class CalcExecutor {
 		if(!printBuffer.equals("")) {
 			System.out.println(printBuffer);
 		}
+		stack.printResult();
 	}
 
 	private void add() throws IllegalArgumentException {
@@ -121,25 +123,52 @@ public class CalcExecutor {
 		if(stack.peek() instanceof Integer) {
 			result = new Double((Integer) stack.pop()) / result;
 		} else {
-			throw new IllegalArgumentException("Expected second argument of '+' operator to be of type integer.");
+			throw new IllegalArgumentException("Expected second argument of '/' operator to be of type integer.");
 		}
 		stack.push(Math.floor(result));
 	}
 
 	private void mod() {
-		throw new RuntimeException("Not implemented!");
+		Integer result = (Integer) stack.pop();
+		if(stack.peek() instanceof Integer) {
+			result = ((Integer) stack.pop()) % result;
+		} else {
+			throw new IllegalArgumentException("Expected second argument of '%' operator to be of type integer.");
+		}
+		stack.push(result);
 	}
 
 	private void greater() {
-		throw new RuntimeException("Not implemented!");
+		Integer a= (Integer) stack.pop();
+		boolean result;
+		if(stack.peek() instanceof Integer) {
+			result = a > ((Integer) stack.pop());
+		} else {
+			throw new IllegalArgumentException("Expected second argument of '>' operator to be of type integer.");
+		}
+		stack.push(result ? 0 : 1);
 	}
 
 	private void less() {
-		throw new RuntimeException("Not implemented!");
+		Integer a= (Integer) stack.pop();
+		boolean result;
+		if(stack.peek() instanceof Integer) {
+			result = a < ((Integer) stack.pop());
+		} else {
+			throw new IllegalArgumentException("Expected second argument of '<' operator to be of type integer.");
+		}
+		stack.push(result ? 0 : 1);
 	}
 
 	private void singleQuote() {
-		throw new RuntimeException("Not implemented!");
+		Object token = stack.pop();
+		if(token instanceof Integer) {
+			Integer data = (Integer) token;
+			printBuffer = Integer.toString(data.intValue(), 10) + printBuffer;
+		} else {
+			String expression = (String) token;
+			printBuffer = expression + printBuffer;
+		}
 	}
 
 	private void doubleQuote() {
