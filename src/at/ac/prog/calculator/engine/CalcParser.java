@@ -23,11 +23,6 @@ public class CalcParser {
 	}
 
 	public void parse(String command) throws CalcParsingException {
-		ArrayList<String> tempList = null;
-		if(parsedElems.size() != 0) {
-			tempList = parsedElems;
-			parsedElems = new ArrayList<String>();
-		}
 		command = command.replaceAll("\\s+", " ");
 
 		String newElem = null;
@@ -132,15 +127,15 @@ public class CalcParser {
 				}
 			}
 		}
+		//we need this, because we could be parsing an expression such as 0, and after the 0 has been parsed,
+		//the loop stops without adding newElem to the list of parsed elements.
 		if(newElem != null) {
 			parsedElems.add(newElem);
 		}
 		if(numOpenBrackets > 0) {
 			throw new CalcParsingException("closingBracket not found");
 		}
-		if(tempList != null && tempList.size() > 0) {
-			parsedElems.addAll(tempList);
-		}
+		//Convert the current input list of parsed element into a stack.
 		createStack();
 	}
 
