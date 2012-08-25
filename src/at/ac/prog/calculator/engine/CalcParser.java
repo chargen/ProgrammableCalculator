@@ -105,7 +105,7 @@ public class CalcParser {
 									}
 								}
 
-								pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'");
+								pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\|");
 								if ((pattern.matcher(String.valueOf(command.charAt(i)))).matches() == true) {
 									parsedElems.add(String.valueOf(command.charAt(i)));
 								} else if(command.charAt(i) == '?') {
@@ -156,6 +156,11 @@ public class CalcParser {
 			}
 		}
 		return false;
+	}
+
+	private boolean isOperator(String token) {
+		Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\|");
+		return pattern.matcher(token).matches();
 	}
 
 	public void debugOutput() {
