@@ -51,10 +51,15 @@ public class CalcParser {
 						parsedElems.add("\\");
 						break;
 					} default: {
-						throw new CalcParsingException("Invalid escape character: " + command.charAt(i));
+						if(isOperator("" + command.charAt(i))) {
+							parsedElems.add("\\" + (command.charAt(i)));
+						} else {
+							throw new CalcParsingException("Invalid escape character: " + command.charAt(i));
+						}
 					}
 				}
 				readSpecialCharacter = false;
+				continue;
 			}
 			switch(command.charAt(i)) {
 				case '[': {
