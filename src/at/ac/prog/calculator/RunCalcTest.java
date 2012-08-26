@@ -53,8 +53,6 @@ public class RunCalcTest {
 			 */
 			parser.parse("45 3 2 ? * / ");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 			parser.parse("3 +");
 			parser.debugOutput();
@@ -63,36 +61,26 @@ public class RunCalcTest {
 
 			parser.parse("A\"B\"C\"D\"E\"F\"G\":\"");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 			parser.clear();
 
 			parser.parse("100'\\ \"\\+\"\\ \"100'\\ \"\\=\"\\ \"200'");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 			parser.clear();
 
 			//Test single quote used on bracket expression
 			parser.parse("[12 14 +]'");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 
 			//Test double quote used on bracket expression
 			parser.parse("[12 14 +]\"");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 
 			parser.parse("3[2*]@");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 
 		} catch(Exception ex) {
