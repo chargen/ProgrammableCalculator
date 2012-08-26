@@ -64,7 +64,7 @@ public class CalcParser {
 			}
 			switch(command.charAt(i)) {
 				case '[': {
-					//catch the special case where a digit is in front of an opening bracket and we are NOT inside a bracket (e.g. '9[2*]@'
+					//catch the special case where a digit is in front of an opening bracket and we are NOT inside a bracket (e.g. '9[2*]@')
 					if(newElem != null && numOpenBrackets == 0) {
 						parsedElems.add(newElem);
 						newElem = null;
