@@ -87,6 +87,13 @@ public class RunCalcTest {
 			parser.debugOutput();
 			executor.execute();
 
+			//Test for the copy operator, copy the digit 2 four times to the top of the stack and print it each time, afterwards
+			//calculate the sum of the remaining items.
+			parser.parse("1 2 3 4 5 4! 6! 8! 10! ''''++++");
+			parser.debugOutput();
+			executor.execute();
+			parser.debugOutput();
+
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}

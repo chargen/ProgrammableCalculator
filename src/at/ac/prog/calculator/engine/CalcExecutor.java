@@ -80,8 +80,22 @@ public class CalcExecutor {
 	}
 
 	private void copy() {
-		// TODO Auto-generated method stub
-
+		Object value = stack.pop();
+		if(value instanceof Integer) {
+			Integer n = (Integer) value;
+			if(n >= 0) {
+				int pos = stack.size() - n.intValue();
+				if(pos < 0) {
+					throw new IllegalArgumentException("Operator ! has not found enough items on the stack " +
+														"to copy the " + n + "-th item");
+				}
+				stack.push(stack.get(stack.size() - n.intValue()));
+			} else {
+				throw new IllegalArgumentException("Operator ! requires a positive number");
+			}
+		} else {
+			throw new IllegalArgumentException("Expected an integer for operator ! (copy).");
+		}
 	}
 
 	private void delete() {
@@ -89,12 +103,17 @@ public class CalcExecutor {
 		if(value instanceof Integer) {
 			Integer n = (Integer) value;
 			if(n >= 0) {
+				int pos = stack.size() - n.intValue();
+				if(pos < 0) {
+					throw new IllegalArgumentException("Operator # has not found enough items on the stack " +
+														"to delete the " + n + "-th item");
+				}
 				stack.remove(stack.size() - n.intValue());
 			} else {
 				throw new IllegalArgumentException("Operator # requires a positive number");
 			}
 		} else {
-			throw new IllegalArgumentException("Expected an integer for operator #.");
+			throw new IllegalArgumentException("Expected an integer for operator # (delete-Operator).");
 		}
 	}
 
