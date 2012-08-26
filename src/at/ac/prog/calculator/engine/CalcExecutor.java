@@ -46,6 +46,9 @@ public class CalcExecutor {
 					case '\'': singleQuote(); break;
 					case '"': doubleQuote(); break;
 					case '@': at(); break;
+					case '#': delete(); break;
+					case '!': copy(); break;
+					case '~': unaryminus(); break;
 					case '?': {
 						flushPrintBuffer();
 						return;
@@ -69,6 +72,30 @@ public class CalcExecutor {
 		}
 		flushPrintBuffer();
 		this.stack.printResult();
+	}
+
+	private void unaryminus() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void copy() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void delete() {
+		Object value = stack.pop();
+		if(value instanceof Integer) {
+			Integer n = (Integer) value;
+			if(n >= 0) {
+				stack.remove(stack.size() - n.intValue());
+			} else {
+				throw new IllegalArgumentException("Operator # requires a positive number");
+			}
+		} else {
+			throw new IllegalArgumentException("Expected an integer for operator #.");
+		}
 	}
 
 	private void at() throws CalcParsingException {
