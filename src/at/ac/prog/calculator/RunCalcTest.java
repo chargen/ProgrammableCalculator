@@ -11,7 +11,8 @@ public class RunCalcTest {
 
 		CalcExecutor executor = new CalcExecutor();
 		CalcParser parser = new CalcParser();
-		CalcStack stack;
+		CalcStack stack = parser.getStack();
+		executor.prepare(stack, parser);
 
 		try {
 			parser.parse("0 [9][9~][4!5#2+#@]@");
@@ -32,8 +33,6 @@ public class RunCalcTest {
 
 			parser.parse(" \\n\"E\"i\"n\"g\"a\"b\"e\":\"\\ \"?@'");
 			parser.debugOutput();
-			stack = parser.getStack();
-			executor.prepare(stack, parser);
 			executor.execute();
 			parser.parse("[0]");
 			parser.debugOutput();
@@ -80,6 +79,11 @@ public class RunCalcTest {
 			executor.execute();
 
 			parser.parse("3[2*]@");
+			parser.debugOutput();
+			executor.execute();
+
+			//Test for the delete operator, 5# should delete the 10 from the stack and the result should be 15
+			parser.parse("1 10 2 3 4 5 5# + + + +");
 			parser.debugOutput();
 			executor.execute();
 
