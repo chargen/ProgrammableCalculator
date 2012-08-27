@@ -104,23 +104,37 @@ public class CalcExecutor {
 	}
 
 	private void div() {
-		double result = new Double((Integer) stack.pop());
-		if(stack.peek() instanceof Integer) {
-			result = new Integer((Integer) stack.pop()) / result;
+		Object value1 = stack.pop();
+		Object value2 = stack.pop();
+		if(value1 instanceof Integer) {
+			double result = new Double((Integer) value1);
+			if(result == 0) throw new IllegalArgumentException("Error in '/' operator: Division by Zero");
+			if(value2 instanceof Integer) {
+				result = new Double((Integer) value2) / result;
+			} else {
+				throw new IllegalArgumentException("Expected first argument of '/' operator to be of type integer.");
+			}
+			stack.push((int) Math.floor(result));
 		} else {
 			throw new IllegalArgumentException("Expected second argument of '/' operator to be of type integer.");
 		}
-		stack.push(Math.floor(result));
 	}
 
 	private void mod() {
-		Integer result = (Integer) stack.pop();
-		if(stack.peek() instanceof Integer) {
-			result = ((Integer) stack.pop()) % result;
+		Object value1 = stack.pop();
+		Object value2 = stack.pop();
+		if(value1 instanceof Integer) {
+			Integer result = (Integer) value2;
+			if(value2 instanceof Integer) {
+				if(result == 0) throw new IllegalArgumentException("Error in '%' operator: Modulo Zero not allowed");
+				result = ((Integer) value2) % result;
+			} else {
+				throw new IllegalArgumentException("Expected first argument of '%' operator to be of type integer.");
+			}
+			stack.push(result);
 		} else {
 			throw new IllegalArgumentException("Expected second argument of '%' operator to be of type integer.");
 		}
-		stack.push(result);
 	}
 
 	private void greater() {
