@@ -62,6 +62,7 @@ public class CalcExecutor {
 							}
 						}
 					}
+					//this.printStackTrace();
 				} else {
 					throw new IllegalArgumentException("Encountered an invalid operator or expression: " + expression);
 				}
@@ -69,8 +70,8 @@ public class CalcExecutor {
 				stack.push(token);
 			}
 		}
-		this.stack.printResult();
-		System.out.println();
+		//this.stack.printResult();
+		//System.out.println();
 	}
 
 	private void add() throws IllegalArgumentException {
@@ -127,7 +128,7 @@ public class CalcExecutor {
 			Integer result = (Integer) value2;
 			if(value2 instanceof Integer) {
 				if(result == 0) throw new IllegalArgumentException("Error in '%' operator: Modulo Zero not allowed");
-				result = ((Integer) value2) % result;
+				result = ((Integer) value1) % result;
 			} else {
 				throw new IllegalArgumentException("Expected first argument of '%' operator to be of type integer.");
 			}
@@ -175,10 +176,9 @@ public class CalcExecutor {
 		if(token instanceof Integer) {
 			Integer data = (Integer) token;
 			if(data > 0x1f && data < 0x7f || data == 0x0A || data == 0x09) {
-				System.out.print(" " + (char) data.intValue());
+				System.out.print((char) data.intValue());
 			} else {
-				System.out.print(" " + data.intValue());
-				//throw new IllegalArgumentException("You tried to print a non printable value.");
+				throw new IllegalArgumentException("You tried to print a non printable value.");
 			}
 		} else {
 			String expression = (String) token;
@@ -275,5 +275,9 @@ public class CalcExecutor {
 		for(i=0; i < this.inputList.size(); i++) {
 			System.out.println("Input List [" + i + "]: " + this.inputList.get(i));
 		}
+	}
+	
+	public void clearStack() {
+		this.stack.clear();
 	}
 }
