@@ -94,14 +94,43 @@ public class RunCalcTest {
 			executor.execute();
 			
 			parser.clear();
-			parser.parse("99 [1+3!@] 1 3! @");
+			parser.parse("[1+3!@] 1 3! @");
 			parser.debugOutput();
 			//executor.execute();
 			
 			parser.clear();
-			parser.parse("[[2!\\n\"\" 1+ 2! 5! > 3+ ! @] 1 2! 5! > 3+ ! @] 999 3! 4# @");
+			parser.parse("[[2!\\n\"' 1+ 2! 5! > 3+ ! @] 1 2! 5! > 3+ ! @] 9 3! 4# @");
+			executor.execute();
+			//executor.printStackTrace();
+			
+			parser.clear();
+			//parser.parse("[[2!\\n\"' 1+ 5! 2! % 0 = 3+ ! @] 1 2! 5! > 3+ ! @] 21 3! 4# @");
+			//executor.execute();
+			
+			executor.clearStack();
+			parser.clear();
+			parser.parse("[[2!\\n\"' 1+ 2! 6! % 0 = 3+ ! @][\\n\"[N\"o\"t\"\\ \"P\"r\"i\"m\"e\"][P\"r\"i\"m\"e\"] 4! 8! = 2+ ! @ 2# 2# 2# 2# 2# 2#] 1 2! 6! > 4+ ! @] 5 3! 4# @");
 			executor.execute();
 			executor.printStackTrace();
+			
+			System.out.println("------------ CALCULATING PRIME NUMBERS --------------");
+			
+			parser.parse("[[[Testing: ]\" 2!'\\n\" 1+ 2! 6! % 0 = 3+ ! @][\\n\"[N\"o\"t\"\\ \"P\"r\"i\"m\"e\"\\n\"][P\"r\"i\"m\"e\"\\n\"] 7!'\\ \" 4! 8! = 2+ ! @ 2# 2# 2# 2# 2# 2#] 1 2! 6! > 4+ ! @] 5 3! @");
+			executor.execute();
+			System.out.println();
+			
+			parser.parse("15 3! @");
+			executor.execute();
+			System.out.println();
+			
+			parser.parse("26 3! @");
+			executor.execute();
+			System.out.println();
+			
+			parser.parse("1583 3! @");
+			executor.execute();
+			System.out.println();
+			
 			
 
 		} catch(Exception ex) {
