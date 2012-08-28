@@ -87,6 +87,22 @@ public class RunCalcTest {
 			parser.parse("1 2 3 4 5 5! 6! 7! 8! ''''++++\\n\"");
 			parser.debugOutput();
 			executor.execute();
+			
+			parser.clear();
+			parser.parse("15 14 3 4 < 2+ # @");
+			parser.debugOutput();
+			executor.execute();
+			
+			parser.clear();
+			parser.parse("99 [1+3!@] 1 3! @");
+			parser.debugOutput();
+			//executor.execute();
+			
+			parser.clear();
+			parser.parse("[[2!\\n\"\" 1+ 2! 5! > 3+ ! @] 1 2! 5! > 3+ ! @] 999 3! 4# @");
+			executor.execute();
+			executor.printStackTrace();
+			
 
 		} catch(Exception ex) {
 			executor.printStackTrace();
