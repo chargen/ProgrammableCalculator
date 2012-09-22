@@ -69,6 +69,8 @@ public class CalcExecutor {
 			} else {
 				stack.push(token);
 			}
+			
+			// TODO: add Debug variable and stop execution
 		}
 		//this.stack.printResult();
 		//System.out.println();
