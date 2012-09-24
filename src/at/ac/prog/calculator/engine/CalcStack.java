@@ -1,5 +1,7 @@
 package at.ac.prog.calculator.engine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class CalcStack extends Stack<Object> {
@@ -10,6 +12,14 @@ public class CalcStack extends Stack<Object> {
 		if(this.size() > 0) {
 			System.out.println("Calculation Result: " + this.pop());
 		}
+	}
+	
+	public List<String> stackAsList() {
+		List<String> stack = new ArrayList<String>();
+		for(int i = 0; i < this.size(); i++) {
+			stack.add(this.get(i).toString());
+		}
+		return stack;
 	}
 
 }
