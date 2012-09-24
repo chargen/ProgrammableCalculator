@@ -1,8 +1,10 @@
 package at.ac.prog.calculator.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import at.ac.prog.calculator.engine.exception.CalcParsingException;
+import at.ac.prog.calculator.engine.util.CalcExecutorListener;
 
 public class CalcExecutor {
 
@@ -21,10 +23,27 @@ public class CalcExecutor {
 	 * and now needs to be used by the operators. Operators always push their result
 	 * on the tokenStack and never put it into the input list.
 	 */
-	private CalcStack stack = new CalcStack();
+	private CalcStack stack;
 
 	private CalcParser parser;
 	private Object token;
+	private boolean bDebug;
+	private List<CalcExecutorListener> listeners;
+	
+	public CalcExecutor() {
+		this.bDebug = false;
+		this.stack = new CalcStack();
+		this.prepare();
+	}
+	
+	/**
+	 * initialize all variables and set the stack.
+	 */
+	private void prepare() {
+		this.parser = new CalcParser();
+		this.inputList = this.parser.getList();
+		this.bDebug = false;
+	}
 
 	/**
 	 * Reinitialize all variables and set the stack.
@@ -32,48 +51,63 @@ public class CalcExecutor {
 	public void prepare(CalcParser parser, List<Object> list) {
 		this.parser = parser;
 		this.inputList = list;
+		this.bDebug = false;
+	}
+	
+	public void execute() throws CalcParsingException {
+		//this.printStackTrace();
+		if (bDebug == true) {
+			if (this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
+				this.processStep();
+			}
+			else {
+				this.notifyNewInputPossible();
+			}
+		}
+		else {
+			while(this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
+				this.processStep();
+			}
+			this.notifyNewInputPossible();
+		}
+		this.notifyInputListChange();
+		this.notifyStackChange();
 	}
 
-	public void execute() throws CalcParsingException {
-		while(this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
-			if(token instanceof String && ((String) token).length() == 1) {
-				String expression = (String) token;
-				if (parser.isOperator(expression)) {
-					if(expression.equals("?")) {
-						return;
-					} else {
-						switch(((String) token).charAt(0)) {
-							case '+': add(); break;
-							case '-': sub(); break;
-							case '*': mult(); break;
-							case '/': div(); break;
-							case '%': mod(); break;
-							case '>': greater(); break;
-							case '<': less(); break;
-							case '\'': singleQuote(); break;
-							case '"': doubleQuote(); break;
-							case '@': at(); break;
-							case '#': delete(); break;
-							case '!': copy(); break;
-							case '~': unaryminus(); break;
-							case '=': equal(); break;
-							default: {
-								throw new IllegalArgumentException("Encountered an unimplemented operator: " + token);
-							}
+	private void processStep() throws CalcParsingException {
+		if(token instanceof String && ((String) token).length() == 1) {
+			String expression = (String) token;
+			if (parser.isOperator(expression)) {
+				if(expression.equals("?")) {
+					return;
+				} else {
+					switch(((String) token).charAt(0)) {
+						case '+': add(); break;
+						case '-': sub(); break;
+						case '*': mult(); break;
+						case '/': div(); break;
+						case '%': mod(); break;
+						case '>': greater(); break;
+						case '<': less(); break;
+						case '\'': singleQuote(); break;
+						case '"': doubleQuote(); break;
+						case '@': at(); break;
+						case '#': delete(); break;
+						case '!': copy(); break;
+						case '~': unaryminus(); break;
+						case '=': equal(); break;
+						default: {
+							throw new IllegalArgumentException("Encountered an unimplemented operator: " + token);
 						}
 					}
-					//this.printStackTrace();
-				} else {
-					throw new IllegalArgumentException("Encountered an invalid operator or expression: " + expression);
 				}
 			} else {
-				stack.push(token);
+				throw new IllegalArgumentException("Encountered an invalid operator or expression: " + expression);
 			}
-			
-			// TODO: add Debug variable and stop execution
+		} else {
+			stack.push(token);
 		}
-		//this.stack.printResult();
-		//System.out.println();
+		//this.printStackTrace();
 	}
 
 	private void add() throws IllegalArgumentException {
@@ -166,10 +200,12 @@ public class CalcExecutor {
 		Object token = stack.pop();
 		if(token instanceof Integer) {
 			Integer data = (Integer) token;
-			System.out.print(Integer.toString(data.intValue(), 10));
+			//System.out.print(Integer.toString(data.intValue(), 10));
+			this.notifyOutputChange(Integer.toString(data.intValue(), 10));
 		} else {
 			String expression = (String) token;
-			System.out.print(expression);
+			//System.out.print(expression);
+			this.notifyOutputChange(expression);
 		}
 	}
 
@@ -178,13 +214,15 @@ public class CalcExecutor {
 		if(token instanceof Integer) {
 			Integer data = (Integer) token;
 			if(data > 0x1f && data < 0x7f || data == 0x0A || data == 0x09) {
-				System.out.print((char) data.intValue());
+				//System.out.print((char) data.intValue());
+				this.notifyOutputChange(String.valueOf((char) data.intValue()));
 			} else {
 				throw new IllegalArgumentException("You tried to print a non printable value.");
 			}
 		} else {
 			String expression = (String) token;
-			System.out.print( expression.substring(1, expression.length() - 1));
+			//System.out.print( expression.substring(1, expression.length() - 1));
+			this.notifyOutputChange(expression.substring(1, expression.length() - 1));
 		}
 	}
 
@@ -282,4 +320,62 @@ public class CalcExecutor {
 	public void clearStack() {
 		this.stack.clear();
 	}
+	
+	public boolean isbDebug() {
+		return bDebug;
+	}
+
+	public void setbDebug(boolean bDebug) {
+		this.bDebug = bDebug;
+	}
+	
+	public void toggleDebug() {
+		this.bDebug = !this.bDebug ;
+	}
+	
+	public void registerListener(CalcExecutorListener listener) {
+		if(this.listeners == null) {
+			this.listeners = new ArrayList<CalcExecutorListener>();
+		}
+		if(this.listeners.contains(listener) == false) {
+			this.listeners.add(listener);
+		}
+	}
+	
+	public void parse(String input) throws CalcParsingException {
+		this.parser.parse(input);
+	}
+	
+	private void notifyStackChange() {
+		if (this.listeners != null) {
+			for(int i = 0; i < this.listeners.size(); i++) {
+				this.listeners.get(i).notifyStackChange(this.stack.stackAsList());
+			}
+		}
+	}
+	
+	private void notifyInputListChange() {
+		if (this.listeners != null) {
+			for(int i = 0; i < this.listeners.size(); i++) {
+				this.listeners.get(i).notifyInputListChange(this.inputList);
+			}
+		}
+	}
+	
+	private void notifyOutputChange(String output) {
+		if (this.listeners != null) {
+			for(int i = 0; i < this.listeners.size(); i++) {
+				this.listeners.get(i).notifyOutput(output);
+			}
+		}
+	}
+	
+	private void notifyNewInputPossible() {
+		if (this.listeners != null) {
+			for(int i = 0; i < this.listeners.size(); i++) {
+				this.listeners.get(i).notifyNewInput();
+			}
+		}
+	}
+
 }
