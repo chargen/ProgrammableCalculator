@@ -66,6 +66,7 @@ public class CalcExecutor {
 		else {
 			while(this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
 				this.processStep();
+				this.notifyInputListChange();
 			}
 			this.notifyNewInputPossible();
 		}
