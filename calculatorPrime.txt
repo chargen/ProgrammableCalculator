@@ -4,9 +4,27 @@ with output
 [[[Testing: ]" 2!'\n" 1+ 2! 6! % 0 = 3+ ! @][\n"[N"o"t"\ "P"r"i"m"e"\n"][P"r"i"m"e"\n"] 7!'\ " 4! 8! = 2+ ! @ 2# 2# 2# 2# 2# 2#] 1 2! 6! > 4+ ! @]
 
 without output
-[[1+ 2! 6! % 0 = 3+ ! @][\n"[N"o"t"\ "P"r"i"m"e"\n"][P"r"i"m"e"\n"] 7!'\ " 4! 8! = 2+ ! @ 2# 2# 2# 2# 2# 2#] 1 2! 6! > 4+ ! @]
+[[1+ 2! 6! % 0 = 3+ ! @]
+ [[Prime][Not Prime] 7!'\ " 4! 8! = 2+ # " \n " 2# 2# 2# 2#]
+ ? 1 2! 6! > 4+ ! @]
 
 Calling the function:
 --------------------
 25758 3! @
 25759 3! @
+
+
+try to improve the prime test:
+
+[[Prime][Not Prime] 7!'\ " 4! 8! = 2+ # " \n " 2# 2# 2# 2#]      /// This is the 'printResult()' function
+[1+ 2! 6! % 0 = 3+ ! @]                                          /// This is the 'testPrime()' function
+1 2! 6! > 4+ ! @                                                 /// This is the bootstrap code which initialises the counter with 1
+
+
+# This is an improved version (append 31 3! @, where 31 is the number to test) and then execute.
+[[1+ 2! 8! % 0 = 5+ ! @] [7!'\ " 2! 8! = 2+ # " \n " 2# 2# 2#][Prime][Not Prime] 1 2! 8! > 6+ ! @]
+
+#Lets try if we can make it even shorter (first with an error output
+[[[Error]"\n"#2 #2 #2 #2 #2 #2 #2] [1+ 2! 4! % 0 = 6+ ! @] [3!'\ " = 2+ # " \n " 2# 2#][Prime][Not Prime] 33 1 2! 4! > 7+ ! @] 2! @
+#Then without:
+[1+ 2! 4! % 0= 6+!@][3!'\ " = 2+ # " \n " 2# 2#][Prime][Not Prime] 33 1 7! @] 2! @
