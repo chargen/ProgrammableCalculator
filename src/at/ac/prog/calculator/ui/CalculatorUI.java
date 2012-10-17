@@ -39,6 +39,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 	private CalcExecutor executor;
 
 	private JButton debugStepButton, runButton, debugButton;
+	private boolean isQuestionMarkOperator = false;
 
 	public CalculatorUI() {
 		this.setTitle("Programmable Calculator");
@@ -209,6 +210,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				CalculatorUI.this.executor.setbDebug(false);
 				runInput();
 			}
 		});
@@ -222,7 +224,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		debugButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CalculatorUI.this.executor.toggleDebug();
+				CalculatorUI.this.executor.setbDebug(true);
 				CalculatorUI.this.debugStepButton.setEnabled(true);
 				runInput();
 			}
@@ -352,6 +354,10 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		this.inputTextField.setEnabled(false);
 		this.inputTextArea.append(input + "\n");
 		this.inputTextArea.setEditable(false);
+		if (isQuestionMarkOperator) {
+			input = "[" + input + "]";
+			isQuestionMarkOperator = false;
+		}
 		try {
 			this.executor.parse(input);
 			this.executor.execute();
@@ -413,6 +419,12 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 	@Override
 	public void notifyNewInput() {
+		this.inputTextField.setEnabled(true);
+	}
+
+	@Override
+	public void notifyNewInput(boolean questionmark) {
+		this.isQuestionMarkOperator = true;
 		this.inputTextField.setEnabled(true);
 	}
 }

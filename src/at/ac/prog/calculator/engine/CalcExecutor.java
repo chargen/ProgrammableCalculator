@@ -30,6 +30,13 @@ public class CalcExecutor {
 	private boolean bDebug;
 	private List<CalcExecutorListener> listeners;
 
+	/*
+	 * This variable is set to true if the ?-operator (question mark) is reached.
+	 * The current execution loop should then be interruped and further input should be
+	 * read!
+	 */
+	boolean questionMarkOperator;
+
 	public CalcExecutor() {
 		this.bDebug = false;
 		this.stack = new CalcStack();
@@ -46,7 +53,7 @@ public class CalcExecutor {
 	}
 
 	/**
-	 * Reinitialize all variables and set the stack.
+	 * Reinitialise all variables and set the stack.
 	 */
 	public void prepare(CalcParser parser, List<Object> list) {
 		this.parser = parser;
@@ -64,7 +71,7 @@ public class CalcExecutor {
 			}
 		}
 		else {
-			while(this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
+			while(this.inputList.size() > 0 && !questionMarkOperator && (token = this.inputList.remove(0)) != null) {
 				this.processStep();
 				this.notifyInputListChange();
 			}
@@ -72,6 +79,7 @@ public class CalcExecutor {
 		}
 		this.notifyInputListChange();
 		this.notifyStackChange();
+		questionMarkOperator = false; //reset the question mark operator
 	}
 
 	private void processStep() throws CalcParsingException {
@@ -79,6 +87,8 @@ public class CalcExecutor {
 			String expression = (String) token;
 			if (parser.isOperator(expression)) {
 				if(expression.equals("?")) {
+					notifyNewInputPossible(true);
+					questionMarkOperator = true;
 					return;
 				} else {
 					switch(((String) token).charAt(0)) {
@@ -378,6 +388,14 @@ public class CalcExecutor {
 		if (this.listeners != null) {
 			for(CalcExecutorListener listener : listeners) {
 				listener.notifyNewInput();
+			}
+		}
+	}
+
+	private void notifyNewInputPossible(boolean questionmark) {
+		if (this.listeners != null) {
+			for(CalcExecutorListener listener : listeners) {
+				listener.notifyNewInput(questionmark);
 			}
 		}
 	}
