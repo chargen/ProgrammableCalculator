@@ -4,10 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
-import java.awt.event.ActionListener;
-
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
@@ -36,19 +34,13 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 	private JTextArea outputTextArea;
 	private JTextArea stackTextArea;
 	private JTextArea intputListTextArea;
-	
+
 	private JButton debugStepButton;
-	
 	private CalcExecutor executor;
 
-	// TODO: finish UI
-	
 	public CalculatorUI() {
 		this.setTitle("Programmable Calculator");
-		this.setSize(new Dimension(640, 480));
-		
 		this.addWindowListener(this);
-		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -63,16 +55,16 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 		this.validate();
 		
 	}
-	
+
 	public void init(CalcExecutor executor) {
 		this.executor = executor;
 	}
-	
+
 	private void initalizeMenu() {
+
 		JMenuBar menuBar = new JMenuBar();
-		
-		JMenu fileMenu = new JMenu("File");		
-		
+		JMenu fileMenu = new JMenu("File");
+
 		JMenuItem closeAppMItem = new JMenuItem("Close App");
 		closeAppMItem.addActionListener(new ActionListener() {
 			@Override
@@ -81,7 +73,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			}
 
 		});
-		
+
 		JMenuItem enableDebugMItem = new JMenuItem("Toggle Debug");
 		enableDebugMItem.addActionListener(new ActionListener() {
 			@Override
@@ -91,15 +83,16 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			}
 
 		});
-		
+
 		JMenuItem clearStackMItem = new JMenuItem("Clear Stack");
 		clearStackMItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
 			    CalculatorUI.this.executor.clearStack();
+			    CalculatorUI.this.stackTextArea.setText("");
 			}
 		});
-		
+
 		JMenuItem clearInputAreaMItem = new JMenuItem("Clear Input Area");
 		clearInputAreaMItem.addActionListener(new ActionListener() {
 			@Override
@@ -107,7 +100,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			    CalculatorUI.this.inputTextArea.setText("");
 			}
 		});
-		
+
 		JMenuItem clearOutputAreaMItem = new JMenuItem("Clear Output Area");
 		clearOutputAreaMItem.addActionListener(new ActionListener() {
 			@Override
@@ -115,7 +108,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			    CalculatorUI.this.outputTextArea.setText("");
 			}
 		});
-		
+
 		fileMenu.add(enableDebugMItem);
 		fileMenu.add(clearStackMItem);
 		fileMenu.add(clearInputAreaMItem);
@@ -123,20 +116,18 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 		fileMenu.addSeparator();
 		fileMenu.add(closeAppMItem);
 		menuBar.add(fileMenu);
-		
+
 		this.setJMenuBar(menuBar);
 	}
-	
+
 	private void initializeComponents() {
-        // position elements
-		GridBagConstraints c = new GridBagConstraints();
-		
+
 		this.inputTextArea = new JTextArea();
 		this.inputTextArea.setEditable(false);
 		JScrollPane inputTextAreaScrollPane = new JScrollPane(this.inputTextArea);
-		
+
 		JLabel inputTextLabel = new JLabel("Input: ");
-		
+
 		this.inputTextField = new JTextField();
 		this.inputTextField.setEditable(true);
 		this.inputTextField.addActionListener(new ActionListener() {
@@ -146,13 +137,16 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 				CalculatorUI.this.processNewParseInput(input);
 			}
 		});
-		
+
 		this.initializeDebugStepButton();
-		
+
 		this.outputTextArea = new JTextArea();
 		this.outputTextArea.setEditable(false);
 		JScrollPane outputTextAreaScrollPane = new JScrollPane(this.outputTextArea);
-		
+
+		GridBagConstraints c,d,e,f,g,h;
+
+		c = new GridBagConstraints();
         c.anchor = GridBagConstraints.LINE_START;
         c.fill = GridBagConstraints.BOTH; c.insets = new Insets(10,10,0,10);
         c.gridx = 0; c.gridy = 0; c.weightx = 1; c.weighty = 0.4; c.gridwidth = 3;
@@ -176,9 +170,10 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
         c.gridx = 4; c.gridy = 0; c.weightx = 0.3; c.weighty = 1; c.gridwidth = 1; c.gridheight = 4;
         this.add(this.createExecutorLoggingPanel(), c);
 	}
-	
+
 	private JPanel createExecutorLoggingPanel() {
 		JPanel panel = new JPanel();
+		panel.setMinimumSize(new Dimension(300, 10));
 		panel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -186,7 +181,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 		this.intputListTextArea = new JTextArea();
 		this.intputListTextArea.setEditable(false);
 		JScrollPane inputListTextAreaScrollPane = new JScrollPane(this.intputListTextArea);
-		
+
 		this.stackTextArea = new JTextArea();
 		this.stackTextArea.setEditable(false);
 		JScrollPane stackTextAreaScrollPane = new JScrollPane(this.stackTextArea);
@@ -200,7 +195,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 
 		return panel;
 	}
-	
+
 	private void initializeDebugStepButton() {
 		this.debugStepButton = new JButton("Next Step");
 		this.debugStepButton.setEnabled(false);
@@ -208,15 +203,15 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				CalculatorUI.this.nextProcessStep();
-			}			
+			}
 		});
 	}
-	
-	
+
+
 	private void addOutputMessage(String message) {
 		this.outputTextArea.append(message);
 	}
-	
+
 
 	private int getValidationDialogResult() {
 		return (JOptionPane.showConfirmDialog(
@@ -225,14 +220,14 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 					"GUI",
 					JOptionPane.OK_CANCEL_OPTION));
 	}
-	
+
 	private void initializeShutdown() {
 		if (JOptionPane.OK_OPTION == getValidationDialogResult()){
 			//TODO: close APP
 			System.exit(0);
 		}
 	}
-	
+
 	private void processNewParseInput(String input) {
 		this.inputTextField.setText("");
 		this.inputTextArea.append(input + "\n");
@@ -245,7 +240,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void nextProcessStep() {
 		try {
 			this.executor.execute();
@@ -281,16 +276,16 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 	@Override
 	public void notifyStackChange(List<String> stack) {
 		this.stackTextArea.setText("");
-		for(int i = 0; i < stack.size(); i++) {
-			this.stackTextArea.append(stack.get(i) + "\n");
+		for(Object item : stack) {
+			this.stackTextArea.append(item + "\n");
 		}
 	}
 
 	@Override
 	public void notifyInputListChange(List<Object> inputList) {
 		this.intputListTextArea.setText("");
-		for(int i = 0; i < inputList.size(); i++) {
-			this.stackTextArea.append(inputList.get(i) + "\n");
+		for(Object item : inputList) {
+			this.stackTextArea.append(item + "\n");
 		}
 	}
 
@@ -298,10 +293,9 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 	public void notifyOutput(String output) {
 		this.addOutputMessage(output);
 	}
-	
+
 	@Override
 	public void notifyNewInput() {
-		this.inputTextField.setEditable(true);
+		this.inputTextField.setEnabled(true);
 	}
-    
 }

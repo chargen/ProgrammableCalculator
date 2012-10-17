@@ -29,13 +29,13 @@ public class CalcExecutor {
 	private Object token;
 	private boolean bDebug;
 	private List<CalcExecutorListener> listeners;
-	
+
 	public CalcExecutor() {
 		this.bDebug = false;
 		this.stack = new CalcStack();
 		this.prepare();
 	}
-	
+
 	/**
 	 * initialize all variables and set the stack.
 	 */
@@ -53,9 +53,8 @@ public class CalcExecutor {
 		this.inputList = list;
 		this.bDebug = false;
 	}
-	
+
 	public void execute() throws CalcParsingException {
-		//this.printStackTrace();
 		if (bDebug == true) {
 			if (this.inputList.size() > 0 && (token = this.inputList.remove(0)) != null) {
 				this.processStep();
@@ -107,7 +106,6 @@ public class CalcExecutor {
 		} else {
 			stack.push(token);
 		}
-		//this.printStackTrace();
 	}
 
 	private void add() throws IllegalArgumentException {
@@ -321,11 +319,11 @@ public class CalcExecutor {
 			System.out.println("Input List [" + i + "]: " + this.inputList.get(i));
 		}
 	}
-	
+
 	public void clearStack() {
 		this.stack.clear();
 	}
-	
+
 	public boolean isbDebug() {
 		return bDebug;
 	}
@@ -333,11 +331,11 @@ public class CalcExecutor {
 	public void setbDebug(boolean bDebug) {
 		this.bDebug = bDebug;
 	}
-	
+
 	public void toggleDebug() {
 		this.bDebug = !this.bDebug ;
 	}
-	
+
 	public void registerListener(CalcExecutorListener listener) {
 		if(this.listeners == null) {
 			this.listeners = new ArrayList<CalcExecutorListener>();
@@ -346,41 +344,40 @@ public class CalcExecutor {
 			this.listeners.add(listener);
 		}
 	}
-	
+
 	public void parse(String input) throws CalcParsingException {
 		this.parser.parse(input);
 	}
-	
+
 	private void notifyStackChange() {
 		if (this.listeners != null) {
-			for(int i = 0; i < this.listeners.size(); i++) {
-				this.listeners.get(i).notifyStackChange(this.stack.stackAsList());
-			}
-		}
-	}
-	
-	private void notifyInputListChange() {
-		if (this.listeners != null) {
-			for(int i = 0; i < this.listeners.size(); i++) {
-				this.listeners.get(i).notifyInputListChange(this.inputList);
-			}
-		}
-	}
-	
-	private void notifyOutputChange(String output) {
-		if (this.listeners != null) {
-			for(int i = 0; i < this.listeners.size(); i++) {
-				this.listeners.get(i).notifyOutput(output);
-			}
-		}
-	}
-	
-	private void notifyNewInputPossible() {
-		if (this.listeners != null) {
-			for(int i = 0; i < this.listeners.size(); i++) {
-				this.listeners.get(i).notifyNewInput();
+			for(CalcExecutorListener listener : listeners) {
+				listener.notifyStackChange(this.stack.stackAsList());
 			}
 		}
 	}
 
+	private void notifyInputListChange() {
+		if (this.listeners != null) {
+			for(CalcExecutorListener listener : listeners) {
+				listener.notifyInputListChange(this.inputList);
+			}
+		}
+	}
+
+	private void notifyOutputChange(String output) {
+		if (this.listeners != null) {
+			for(CalcExecutorListener listener : listeners) {
+				listener.notifyOutput(output);
+			}
+		}
+	}
+
+	private void notifyNewInputPossible() {
+		if (this.listeners != null) {
+			for(CalcExecutorListener listener : listeners) {
+				listener.notifyNewInput();
+			}
+		}
+	}
 }
