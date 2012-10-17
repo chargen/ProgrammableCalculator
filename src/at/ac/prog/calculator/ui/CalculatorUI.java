@@ -42,18 +42,17 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 		this.setTitle("Programmable Calculator");
 		this.addWindowListener(this);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		this.setLayout(new GridBagLayout());
-        this.setMinimumSize(new Dimension(640, 480));
-		this.setVisible(true);
-		
+
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0};
+		getContentPane().setLayout(gridBagLayout);
+		this.setMinimumSize(new Dimension(920, 480));
+
 		this.initalizeMenu();
 		this.initializeComponents();
-		
-		// just in case swing doesn't do it itself --> validate GUI so that it is shown correctly
-		this.validate();
-		
+		this.setVisible(true);
 	}
 
 	public void init(CalcExecutor executor) {
@@ -148,36 +147,42 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 
 		c = new GridBagConstraints();
         c.anchor = GridBagConstraints.LINE_START;
-        c.fill = GridBagConstraints.BOTH; c.insets = new Insets(10,10,0,10);
+        c.fill = GridBagConstraints.BOTH; c.insets = new Insets(10, 10, 5, 10);
         c.gridx = 0; c.gridy = 0; c.weightx = 1; c.weighty = 0.4; c.gridwidth = 3;
-        this.add(inputTextAreaScrollPane, c);
-        
-        c.fill = GridBagConstraints.NONE; c.insets = new Insets(0,10,0,0);
-        c.gridx = 0; c.gridy = 1; c.weightx = 0.0; c.weighty = 0.1; c.gridwidth = 1;
-        this.add(inputTextLabel, c);
-        c.fill = GridBagConstraints.HORIZONTAL; c.insets = new Insets(0,5,0,10);
-        c.gridx = 1; c.gridy = 1; c.weightx = 0.9; c.weighty = 0.1; c.gridwidth = 1;
-        this.add(inputTextField, c);
-        c.fill = GridBagConstraints.NONE; c.insets = new Insets(0,0,0,10);
-        c.gridx = 2; c.gridy = 1; c.weightx = 0.0; c.weighty = 0.1; c.gridwidth = 1;
-        this.add(this.debugStepButton, c);
-        
-        c.fill = GridBagConstraints.BOTH; c.insets = new Insets(15,10,10,10);
-        c.gridx = 0; c.gridy = 2; c.weightx = 1; c.weighty = 0.5; c.gridwidth = 3;
-        this.add(outputTextAreaScrollPane, c);
-        
-        c.fill = GridBagConstraints.BOTH; c.insets = new Insets(10,10,10,10);
-        c.gridx = 4; c.gridy = 0; c.weightx = 0.3; c.weighty = 1; c.gridwidth = 1; c.gridheight = 4;
-        this.add(this.createExecutorLoggingPanel(), c);
+        getContentPane().add(inputTextAreaScrollPane, c);
+
+        d = new GridBagConstraints();
+        d.fill = GridBagConstraints.NONE; d.insets = new Insets(0, 10, 5, 5);
+        d.gridx = 0; d.gridy = 1; d.weightx = 0.0; d.weighty = 0.1; d.gridwidth = 1;
+        getContentPane().add(inputTextLabel, d);
+
+        e = new GridBagConstraints();
+        e.fill = GridBagConstraints.HORIZONTAL; e.insets = new Insets(0, 5, 5, 10);
+        e.gridx = 1; e.gridy = 1; e.weightx = 0.9; e.weighty = 0.1; e.gridwidth = 1;
+        getContentPane().add(inputTextField, e);
+
+        f = new GridBagConstraints();
+        f.fill = GridBagConstraints.NONE; f.insets = new Insets(0, 0, 5, 10);
+        f.gridx = 2; f.gridy = 1; f.weightx = 0.0; f.weighty = 0.1; f.gridwidth = 1;
+        getContentPane().add(this.debugStepButton, f);
+
+        g = new GridBagConstraints();
+        g.weightx = 1.0;
+        g.fill = GridBagConstraints.BOTH; g.insets = new Insets(5, 10, 10, 10);
+        g.gridx = 0; g.gridy = 2;g.weighty = 0.5; g.gridwidth = 3;
+        getContentPane().add(outputTextAreaScrollPane, g);
+
+        h = new GridBagConstraints();
+        h.fill = GridBagConstraints.BOTH; h.insets = new Insets(10,10,10,10);
+        h.gridx = 3; h.gridy = 0; h.weightx = 0.3; h.weighty = 1; h.gridwidth = 1; h.gridheight = 3;
+        getContentPane().add(this.createExecutorLoggingPanel(), h);
 	}
 
 	private JPanel createExecutorLoggingPanel() {
 		JPanel panel = new JPanel();
 		panel.setMinimumSize(new Dimension(300, 10));
 		panel.setLayout(new GridBagLayout());
-		
-		GridBagConstraints c = new GridBagConstraints();
-		
+
 		this.intputListTextArea = new JTextArea();
 		this.intputListTextArea.setEditable(false);
 		JScrollPane inputListTextAreaScrollPane = new JScrollPane(this.intputListTextArea);
@@ -185,13 +190,19 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 		this.stackTextArea = new JTextArea();
 		this.stackTextArea.setEditable(false);
 		JScrollPane stackTextAreaScrollPane = new JScrollPane(this.stackTextArea);
-		
-		c.fill = GridBagConstraints.BOTH; c.insets = new Insets(0,0,0,0);
-        c.gridx = 0; c.gridy = 0; c.weightx = 1; c.weighty = 1; c.gridwidth = 1;
-        panel.add(inputListTextAreaScrollPane, c);
-        c.fill = GridBagConstraints.BOTH; c.insets = new Insets(10,0,0,0);
-        c.gridx = 0; c.gridy = 1; c.weightx = 1; c.weighty = 1; c.gridwidth = 1;
-        panel.add(stackTextAreaScrollPane, c);
+
+
+		GridBagConstraints i,j;
+
+		i = new GridBagConstraints();
+		i.fill = GridBagConstraints.BOTH; i.insets = new Insets(0,0,0,0);
+        i.gridx = 0; i.gridy = 0; i.weightx = 1; i.weighty = 1; i.gridwidth = 1;
+        panel.add(inputListTextAreaScrollPane, i);
+
+        j = new GridBagConstraints();
+        j.fill = GridBagConstraints.BOTH; j.insets = new Insets(10,0,0,0);
+        j.gridx = 0; j.gridy = 1; j.weightx = 1; j.weighty = 1; j.gridwidth = 1;
+        panel.add(stackTextAreaScrollPane, j);
 
 		return panel;
 	}
@@ -230,6 +241,7 @@ public class CalculatorUI extends JFrame implements WindowListener, CalcExecutor
 
 	private void processNewParseInput(String input) {
 		this.inputTextField.setText("");
+		this.inputTextField.setEnabled(false);
 		this.inputTextArea.append(input + "\n");
 		this.inputTextArea.setEditable(false);
 		try {
