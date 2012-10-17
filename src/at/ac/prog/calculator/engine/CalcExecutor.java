@@ -304,15 +304,20 @@ public class CalcExecutor {
 
 	}
 
+	/**
+	 * Print the current stack, the current operation and the current input list.
+	 * The operation is executed on the top most stack items. The next lowest item
+	 * in the input list will be put on the stack (or be executed) next.
+	 */
 	public void printStackTrace() {
 		System.out.println("---------------------------------- EXECUTOR STACK TRACE -------------------------------------");
 		int i;
-		for(i = 0; i < this.stack.size(); i++) {
+		for(i = this.stack.size() - 1; i >= 0; i--) {
 			System.out.println("Stack [" + i + "]: " + this.stack.get(i));
 		}
 		System.out.println("Current Operation: " + token);
 		System.out.println("Tokens remaining in input list:");
-		for(i=0; i < this.inputList.size(); i++) {
+		for(i= this.inputList.size() - 1; i >= 0; i--) {
 			System.out.println("Input List [" + i + "]: " + this.inputList.get(i));
 		}
 	}
