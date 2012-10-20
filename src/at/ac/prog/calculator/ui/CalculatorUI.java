@@ -1,7 +1,9 @@
 package at.ac.prog.calculator.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -39,6 +41,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 	private CalcExecutor executor;
 
 	private JButton debugStepButton, runButton, debugButton;
+	private JTextArea textArea;
 	private boolean isQuestionMarkOperator = false;
 
 	public CalculatorUI() {
@@ -48,8 +51,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0 };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0 };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 50 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0 };
 		getContentPane().setLayout(gridBagLayout);
 		this.setMinimumSize(new Dimension(920, 480));
@@ -156,11 +159,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		btnClearAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CalculatorUI.this.executor.clearStack();
-				CalculatorUI.this.stackTextArea.setText("");
-				CalculatorUI.this.outputTextArea.setText("");
-				CalculatorUI.this.inputTextArea.setText("");
-				CalculatorUI.this.inputListTextArea.setText("");
+				resetCalculator();
 			}
 		});
 		panel.add(btnClearAll);
@@ -210,8 +209,22 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CalculatorUI.this.executor.setbDebug(false);
-				runInput();
+				if(CalculatorUI.this.executor.isbDebug()) {
+					// in the special case, that we were in debug mode before and now want to
+					// finish the calculation, we have to leave debug mode, disable the nextStep
+					// button and then run execute()
+					CalculatorUI.this.executor.setbDebug(false);
+					CalculatorUI.this.debugStepButton.setEnabled(false);
+					try {
+						CalculatorUI.this.executor.execute();
+					} catch (CalcParsingException e1) {
+						setErrorState(e1.getLocalizedMessage());
+					} catch (IllegalArgumentException e1) {
+						setErrorState(e1.getLocalizedMessage());
+					}
+				} else {
+					runInput();
+				}
 			}
 		});
 		GridBagConstraints gbc_btnRun = new GridBagConstraints();
@@ -255,13 +268,27 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		h.gridwidth = 1;
 		h.gridheight = 4;
 		getContentPane().add(this.createExecutorLoggingPanel(), h);
-	}
 
-	private void runInput() {
-		String input = CalculatorUI.this.inputTextField.getText();
-		if (!input.equals("")) {
-			CalculatorUI.this.processNewParseInput(input);
-		}
+		JLabel lblStatus = new JLabel("Status:");
+		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
+		gbc_lblStatus.anchor = GridBagConstraints.SOUTHWEST;
+		gbc_lblStatus.insets = new Insets(0, 10, 5, 0);
+		gbc_lblStatus.gridx = 0;
+		gbc_lblStatus.gridy = 5;
+		getContentPane().add(lblStatus, gbc_lblStatus);
+
+		textArea = new JTextArea();
+		textArea.setFont(new Font("Dialog", Font.BOLD, 12));
+		textArea.setMargin(new Insets(6, 6, 6, 6));
+		textArea.setEditable(false);
+		textArea.setDoubleBuffered(true);
+		GridBagConstraints gbc_textArea = new GridBagConstraints();
+		gbc_textArea.gridwidth = 5;
+		gbc_textArea.insets = new Insets(0, 10, 10, 10);
+		gbc_textArea.fill = GridBagConstraints.BOTH;
+		gbc_textArea.gridx = 0;
+		gbc_textArea.gridy = 6;
+		getContentPane().add(textArea, gbc_textArea);
 	}
 
 	private JPanel createExecutorLoggingPanel() {
@@ -328,8 +355,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		try {
 			this.executor.execute();
 		} catch (CalcParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setErrorState(e.getLocalizedMessage());
 		}
 	}
 
@@ -349,6 +375,13 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		}
 	}
 
+	private void runInput() {
+		String input = CalculatorUI.this.inputTextField.getText();
+		if (!input.equals("")) {
+			CalculatorUI.this.processNewParseInput(input);
+		}
+	}
+
 	private void processNewParseInput(String input) {
 		this.inputTextField.setText("");
 		this.inputTextField.setEnabled(false);
@@ -362,8 +395,9 @@ public class CalculatorUI extends JFrame implements WindowListener,
 			this.executor.parse(input);
 			this.executor.execute();
 		} catch (CalcParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setErrorState(e.getLocalizedMessage());
+		} catch (IllegalArgumentException e) {
+			setErrorState(e.getLocalizedMessage());
 		}
 	}
 
@@ -426,5 +460,21 @@ public class CalculatorUI extends JFrame implements WindowListener,
 	public void notifyNewInput(boolean questionmark) {
 		this.isQuestionMarkOperator = true;
 		this.inputTextField.setEnabled(true);
+	}
+
+	private void resetCalculator() {
+		CalculatorUI.this.executor.clearStack();
+		CalculatorUI.this.stackTextArea.setText("");
+		CalculatorUI.this.outputTextArea.setText("");
+		CalculatorUI.this.inputTextArea.setText("");
+		CalculatorUI.this.inputListTextArea.setText("");
+		CalculatorUI.this.inputTextField.setEnabled(true);
+		this.textArea.setText("");
+		this.textArea.setBackground(new JTextArea().getBackground());
+	}
+
+	private void setErrorState(String message) {
+		this.textArea.setText(message + "\nYou can inspect the current stack and input list state to analyse your error. Click 'Clear all' to start again.");
+		this.textArea.setBackground(new Color(255, 160, 160));
 	}
 }
