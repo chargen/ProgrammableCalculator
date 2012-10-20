@@ -356,6 +356,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 			this.executor.execute();
 		} catch (CalcParsingException e) {
 			setErrorState(e.getLocalizedMessage());
+		} catch (IllegalArgumentException e) {
+			setErrorState(e.getLocalizedMessage());
 		}
 	}
 
