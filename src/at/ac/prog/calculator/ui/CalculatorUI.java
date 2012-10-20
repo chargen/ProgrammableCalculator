@@ -221,6 +221,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 						setErrorState(e1.getLocalizedMessage());
 					} catch (IllegalArgumentException e1) {
 						setErrorState(e1.getLocalizedMessage());
+					} catch (Exception e1) {
+						setErrorState(e1.getLocalizedMessage());
 					}
 				} else {
 					runInput();
@@ -358,6 +360,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 			setErrorState(e.getLocalizedMessage());
 		} catch (IllegalArgumentException e) {
 			setErrorState(e.getLocalizedMessage());
+		} catch (Exception e1) {
+			setErrorState(e1.getLocalizedMessage());
 		}
 	}
 
@@ -400,6 +404,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 			setErrorState(e.getLocalizedMessage());
 		} catch (IllegalArgumentException e) {
 			setErrorState(e.getLocalizedMessage());
+		} catch (Exception e1) {
+			setErrorState(e1.getLocalizedMessage());
 		}
 	}
 
@@ -473,10 +479,22 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		CalculatorUI.this.inputTextField.setEnabled(true);
 		this.textArea.setText("");
 		this.textArea.setBackground(new JTextArea().getBackground());
+		this.debugStepButton.setEnabled(true);
+		this.runButton.setEnabled(true);
+		this.debugButton.setEnabled(true);
 	}
 
 	private void setErrorState(String message) {
-		this.textArea.setText(message + "\nYou can inspect the current stack and input list state to analyse your error. Click 'Clear all' to start again.");
+		final String ERROR = "\nYou can inspect the current stack and input list state to analyse your error. Click 'Clear all' to start again.";
+		final String GENERICERROR = "A generic error occured in the execution engine. Please click 'Clear all' to try another expression.";
+		if(message != null) {
+			this.textArea.setText(message + ERROR);
+		} else {
+			this.textArea.setText(GENERICERROR);
+		}
 		this.textArea.setBackground(new Color(255, 160, 160));
+		this.debugStepButton.setEnabled(false);
+		this.runButton.setEnabled(false);
+		this.debugButton.setEnabled(false);
 	}
 }
