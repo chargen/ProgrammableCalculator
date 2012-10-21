@@ -29,6 +29,24 @@ import at.ac.prog.calculator.engine.CalcExecutor;
 import at.ac.prog.calculator.engine.exception.CalcParsingException;
 import at.ac.prog.calculator.engine.util.CalcExecutorListener;
 
+
+/**
+ * This class shows a easy to use graphical user interface for the calculator.
+ * The UI has a simple execution mode and a debug mode. The program to execute is
+ * entered in the input field. There are four areas:
+ *  * A history where the input programs are listed (top left)
+ *  * An output area, where the results from the progam executions are output
+ *  * Then there are two areas for the debug mode on the left:
+ *    - The current input list (top right)
+ *    - The current stack (bottom right)
+ * The GUI has buttons five buttons:
+ *  * Run, Debug, Next Step, Clear All and Load Prime Test
+ * Additionally there is a status area at the bottom that displays error
+ * messages of the calculation engine.
+ *
+ * @author Ralph Hoch<br/>
+ *          Sebastian Geiger
+ */
 public class CalculatorUI extends JFrame implements WindowListener,
 		CalcExecutorListener {
 
@@ -62,6 +80,10 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		this.setVisible(true);
 	}
 
+	/**
+	 * Inject an in instance of the CalcExecutor that will perform the execution.
+	 * @param executor
+	 */
 	public void init(CalcExecutor executor) {
 		this.executor = executor;
 	}
@@ -120,8 +142,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 		this.inputTextArea = new JTextArea();
 		this.inputTextArea.setEditable(false);
-		JScrollPane inputTextAreaScrollPane = new JScrollPane(
-				this.inputTextArea);
+		JScrollPane inputTextAreaScrollPane = new JScrollPane(this.inputTextArea);
 
 		JLabel inputTextLabel = new JLabel("Input: ");
 
@@ -169,7 +190,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				CalculatorUI.this.inputTextField
-						.setText("[[1+ 2! 4! % 0= 6+!@][3!'\\ \" = 2+ # \" \\n \" 2# 2#][Prime][Not Prime] 33 1 7! @] 2! @");
+						.setText("[[1+ 2! 4! % 0= 6+!@][3!'\\ \" = 2+ # \" \\n \" 2# 2#][Prime][Not Prime][Enter Test Number]\"\\n\" ? @ 1 7! @] 2! @");
 			}
 		});
 		panel.add(btnLoadPrimeTest);
@@ -376,7 +397,6 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 	private void initializeShutdown() {
 		if (JOptionPane.OK_OPTION == getValidationDialogResult()) {
-			// TODO: close APP
 			System.exit(0);
 		}
 	}
@@ -466,10 +486,14 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 	@Override
 	public void notifyNewInput(boolean questionmark) {
-		this.isQuestionMarkOperator = true;
+		this.isQuestionMarkOperator = questionmark;
 		this.inputTextField.setEnabled(true);
 	}
 
+
+	/**
+	 * This resets the GUI so the calculator can be used again.
+	 */
 	private void resetCalculator() {
 		CalculatorUI.this.executor.clearStack();
 		CalculatorUI.this.stackTextArea.setText("");
@@ -479,14 +503,20 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		CalculatorUI.this.inputTextField.setEnabled(true);
 		this.textArea.setText("");
 		this.textArea.setBackground(new JTextArea().getBackground());
-		this.debugStepButton.setEnabled(true);
 		this.runButton.setEnabled(true);
 		this.debugButton.setEnabled(true);
 	}
 
+	/**
+	 * This sets the application into an error state. It is useful when the
+	 * calculator threw an exception. The function deactivates all GUI elements
+	 * and shows the message in the status area at the bottom (with red background).
+	 */
 	private void setErrorState(String message) {
-		final String ERROR = "\nYou can inspect the current stack and input list state to analyse your error. Click 'Clear all' to start again.";
-		final String GENERICERROR = "A generic error occured in the execution engine. Please click 'Clear all' to try another expression.";
+		final String ERROR = "\nYou can inspect the current stack and input list state to analyse your error." +
+				" Click 'Clear all' to start again.";
+		final String GENERICERROR = "A generic error occured in the execution engine." +
+				" Please click 'Clear all' to try another expression.";
 		if(message != null) {
 			this.textArea.setText(message + ERROR);
 		} else {

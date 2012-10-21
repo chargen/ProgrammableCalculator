@@ -19,7 +19,7 @@ public class CalcParser {
 	}
 
 	/**
-	 * For debug purposes.
+	 * This function clears the current state of the parser.
 	 */
 	public void clear() {
 		this.parsedElems.clear();
@@ -27,6 +27,10 @@ public class CalcParser {
 		this.inputList.clear();
 	}
 
+	/**
+	 * This is the core function of the parser. It parses the input string
+	 * according to the language syntax and puts all elements into the inputList.
+	 */
 	public void parse(String command) throws CalcParsingException {
 		command = command.replaceAll("\\s+", " ");
 
@@ -145,8 +149,6 @@ public class CalcParser {
 		if(numOpenBrackets > 0) {
 			throw new CalcParsingException("closingBracket not found");
 		}
-		//Convert the current input list of parsed element into a stack.
-		//createStack();
 		createList();
 	}
 
@@ -159,6 +161,10 @@ public class CalcParser {
 		return true;
 	}
 
+	/**
+	 * This function prepends the newly parsed elements to the front of
+	 * the current input list.
+	 */
 	private void createList() {
 		List<Object> objectTokens = new ArrayList<Object>();
 		String first;
@@ -185,7 +191,10 @@ public class CalcParser {
 		inputList.addAll(0, objectTokens); //prepend the new tokens to the input list
 	}
 
-
+	/**
+	 * This functions checks if the input string matches any of the valid operators for this
+	 * programming language.
+	 */
 	public boolean isOperator(String token) {
 		Pattern pattern = Pattern.compile("\\+|-|\\*|/|%|&|=|<|>|~|!|#|@|\"|'|\\||\\?");
 		return pattern.matcher(token).matches();
