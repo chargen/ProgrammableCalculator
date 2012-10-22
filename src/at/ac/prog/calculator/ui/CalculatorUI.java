@@ -50,6 +50,51 @@ import at.ac.prog.calculator.engine.util.CalcExecutorListener;
 public class CalculatorUI extends JFrame implements WindowListener,
 		CalcExecutorListener {
 
+	private final class RunActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			Runnable runable = new Runnable() {
+				@Override
+				public void run() {
+					if(CalculatorUI.this.executor.isbDebug()) {
+						// in the special case, that we were in debug mode before and now want to
+						// finish the calculation, we have to leave debug mode, disable the nextStep
+						// button and then run execute()
+						CalculatorUI.this.executor.setbDebug(false);
+						CalculatorUI.this.debugStepButton.setEnabled(false);
+						try {
+							CalculatorUI.this.executor.execute();
+						} catch (CalcParsingException e1) {
+							setErrorState(e1.getLocalizedMessage());
+						} catch (IllegalArgumentException e1) {
+							setErrorState(e1.getLocalizedMessage());
+						} catch (Exception e1) {
+							setErrorState(e1.getLocalizedMessage());
+						}
+					} else {
+						runInput();
+					}
+				}
+			};
+			thread = new Thread(runable);
+			runButton.setText("Stop");
+			runButton.removeActionListener(runActionListener);
+			runButton.addActionListener(stopActionListener);
+			thread.start();
+		}
+	}
+
+	private final class StopActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			runButton.setText("Run");
+			runButton.removeActionListener(stopActionListener);
+			runButton.addActionListener(runActionListener);
+			executor.stop();
+		}
+	}
+
 	private static final long serialVersionUID = 986427844864093227L;
 	private JTextField inputTextField;
 	private JTextArea inputTextArea;
@@ -57,10 +102,13 @@ public class CalculatorUI extends JFrame implements WindowListener,
 	private JTextArea stackTextArea;
 	private JTextArea inputListTextArea;
 	private CalcExecutor executor;
+	private Thread thread;
 
 	private JButton debugStepButton, runButton, debugButton;
 	private JTextArea textArea;
 	private boolean isQuestionMarkOperator = false;
+
+	private ActionListener runActionListener, stopActionListener;
 
 	public CalculatorUI() {
 		this.setTitle("Programmable Calculator");
@@ -75,6 +123,8 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		getContentPane().setLayout(gridBagLayout);
 		this.setMinimumSize(new Dimension(920, 480));
 
+		this.runActionListener = new RunActionListener();
+		this.stopActionListener = new StopActionListener();
 		this.initalizeMenu();
 		this.initializeComponents();
 		this.setVisible(true);
@@ -108,7 +158,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		clearStackMItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
-				CalculatorUI.this.executor.clearStack();
+				CalculatorUI.this.executor.clear();
 				CalculatorUI.this.stackTextArea.setText("");
 			}
 		});
@@ -158,6 +208,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		this.initializeDebugStepButton();
 
 		this.outputTextArea = new JTextArea();
+		outputTextArea.setLineWrap(true);
 		this.outputTextArea.setEditable(false);
 		JScrollPane outputTextAreaScrollPane = new JScrollPane(
 				this.outputTextArea);
@@ -195,6 +246,16 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		});
 		panel.add(btnLoadPrimeTest);
 
+		JButton btnLoadDivisionTest = new JButton("Load Division Test");
+		btnLoadDivisionTest.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				CalculatorUI.this.inputTextField
+				.setText("[3! 3! / ' .\" 3! 4# 8! @][2! 4! % 10 * 3# 2! 4! / 8! @][2! 1 > 6+ ! @][' 4! 5# 1 - 4! 5# 4! 5# 8 5! 0 < 3* - ! @][\\n\"  2# 2# 2#] 4 17 7 9! @");
+			}
+		});
+		panel.add(btnLoadDivisionTest);
+
 		c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_START;
 		c.fill = GridBagConstraints.BOTH;
@@ -227,29 +288,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		getContentPane().add(inputTextField, e);
 
 		runButton = new JButton("Run");
-		runButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(CalculatorUI.this.executor.isbDebug()) {
-					// in the special case, that we were in debug mode before and now want to
-					// finish the calculation, we have to leave debug mode, disable the nextStep
-					// button and then run execute()
-					CalculatorUI.this.executor.setbDebug(false);
-					CalculatorUI.this.debugStepButton.setEnabled(false);
-					try {
-						CalculatorUI.this.executor.execute();
-					} catch (CalcParsingException e1) {
-						setErrorState(e1.getLocalizedMessage());
-					} catch (IllegalArgumentException e1) {
-						setErrorState(e1.getLocalizedMessage());
-					} catch (Exception e1) {
-						setErrorState(e1.getLocalizedMessage());
-					}
-				} else {
-					runInput();
-				}
-			}
-		});
+		runButton.addActionListener(runActionListener);
 		GridBagConstraints gbc_btnRun = new GridBagConstraints();
 		gbc_btnRun.insets = new Insets(0, 0, 5, 5);
 		gbc_btnRun.gridx = 1;
@@ -486,8 +525,14 @@ public class CalculatorUI extends JFrame implements WindowListener,
 
 	@Override
 	public void notifyNewInput(boolean questionmark) {
-		this.isQuestionMarkOperator = questionmark;
+		if(questionmark) {
+			this.isQuestionMarkOperator = questionmark;
+			this.debugStepButton.setEnabled(false);
+		}
 		this.inputTextField.setEnabled(true);
+		runButton.setText("Run");
+		runButton.removeActionListener(stopActionListener);
+		runButton.addActionListener(runActionListener);
 	}
 
 
@@ -495,7 +540,20 @@ public class CalculatorUI extends JFrame implements WindowListener,
 	 * This resets the GUI so the calculator can be used again.
 	 */
 	private void resetCalculator() {
-		CalculatorUI.this.executor.clearStack();
+
+		// Reset the executor, join the run thread and
+		// restore the run button.
+		CalculatorUI.this.executor.clear();
+		try {
+			if(thread != null) {
+				thread.join();
+			}
+		} catch (InterruptedException e) { }
+		runButton.setText("Run");
+		runButton.removeActionListener(stopActionListener);
+		runButton.addActionListener(runActionListener);
+
+
 		CalculatorUI.this.stackTextArea.setText("");
 		CalculatorUI.this.outputTextArea.setText("");
 		CalculatorUI.this.inputTextArea.setText("");
@@ -503,6 +561,7 @@ public class CalculatorUI extends JFrame implements WindowListener,
 		CalculatorUI.this.inputTextField.setEnabled(true);
 		this.textArea.setText("");
 		this.textArea.setBackground(new JTextArea().getBackground());
+		this.debugStepButton.setEnabled(false);
 		this.runButton.setEnabled(true);
 		this.debugButton.setEnabled(true);
 	}

@@ -107,7 +107,7 @@ public class RunCalcTest {
 			//parser.parse("[[2!\\n\"' 1+ 5! 2! % 0 = 3+ ! @] 1 2! 5! > 3+ ! @] 21 3! 4# @");
 			//executor.execute();
 			
-			executor.clearStack();
+			executor.clear();
 			parser.clear();
 			parser.parse("[[2!\\n\"' 1+ 2! 6! % 0 = 3+ ! @][\\n\"[N\"o\"t\"\\ \"P\"r\"i\"m\"e\"][P\"r\"i\"m\"e\"] 4! 8! = 2+ ! @ 2# 2# 2# 2# 2# 2#] 1 2! 6! > 4+ ! @] 5 3! 4# @");
 			executor.execute();

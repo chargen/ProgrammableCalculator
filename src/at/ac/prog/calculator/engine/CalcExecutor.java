@@ -29,10 +29,11 @@ public class CalcExecutor {
 	private Object token;
 	private boolean bDebug;
 	private List<CalcExecutorListener> listeners;
+	private boolean running;
 
 	/*
 	 * This variable is set to true if the ?-operator (question mark) is reached.
-	 * The current execution loop should then be interruped and further input should be
+	 * The current execution loop should then be interrupted and further input should be
 	 * read!
 	 */
 	boolean questionMarkOperator;
@@ -50,6 +51,7 @@ public class CalcExecutor {
 		this.parser = new CalcParser();
 		this.inputList = this.parser.getList();
 		this.bDebug = false;
+		this.running = true;
 	}
 
 	/**
@@ -59,6 +61,7 @@ public class CalcExecutor {
 		this.parser = parser;
 		this.inputList = list;
 		this.bDebug = false;
+		this.running = true;
 	}
 
 	public void execute() throws CalcParsingException {
@@ -74,6 +77,9 @@ public class CalcExecutor {
 			while(this.inputList.size() > 0 && !questionMarkOperator && (token = this.inputList.remove(0)) != null) {
 				this.processStep();
 				this.notifyInputListChange();
+				if(!running) {
+					throw new CalcParsingException("The execution module was interrupted during execution.");
+				}
 			}
 			this.notifyNewInputPossible();
 		}
@@ -173,7 +179,7 @@ public class CalcExecutor {
 			Integer result = (Integer) value2;
 			if(value2 instanceof Integer) {
 				if(result == 0) throw new IllegalArgumentException("Error in '%' operator: Modulo Zero not allowed");
-				result = ((Integer) value1) % result;
+				result = result % ((Integer) value1);
 			} else {
 				throw new IllegalArgumentException("Expected first argument of '%' operator to be of type integer.");
 			}
@@ -209,11 +215,9 @@ public class CalcExecutor {
 		Object token = stack.pop();
 		if(token instanceof Integer) {
 			Integer data = (Integer) token;
-			//System.out.print(Integer.toString(data.intValue(), 10));
 			this.notifyOutputChange(Integer.toString(data.intValue(), 10));
 		} else {
 			String expression = (String) token;
-			//System.out.print(expression);
 			this.notifyOutputChange(expression);
 		}
 	}
@@ -331,8 +335,10 @@ public class CalcExecutor {
 		}
 	}
 
-	public void clearStack() {
+	public void clear() {
 		this.stack.clear();
+		this.parser.clear();
+		this.running = true;
 	}
 
 	public boolean isbDebug() {
@@ -398,5 +404,9 @@ public class CalcExecutor {
 				listener.notifyNewInput(questionmark);
 			}
 		}
+	}
+
+	public void stop() {
+		this.running = false;
 	}
 }
